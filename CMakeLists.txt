@@ -66,3 +66,19 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
 
     # Add user defined libraries
 )
+
+# Generate binary file from ELF
+add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:${CMAKE_PROJECT_NAME}> ${CMAKE_PROJECT_NAME}.bin
+    COMMENT "Generating binary file ${CMAKE_PROJECT_NAME}.bin"
+    VERBATIM
+)
+
+# Custom target for flashing the board
+add_custom_target(flash
+    COMMAND st-flash write ${CMAKE_PROJECT_NAME}.bin 0x08000000
+    DEPENDS ${CMAKE_PROJECT_NAME}
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMENT "Flashing ${CMAKE_PROJECT_NAME}.bin to STM32F429I board using ST-Link"
+    VERBATIM
+)
