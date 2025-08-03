@@ -46,11 +46,17 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
     Core/Src/hello.c
+    Drivers/STM32CubeF4/Src/stm32f429i_discovery.c
+    Drivers/STM32CubeF4/Src/stm32f429i_discovery_lcd.c
+    Drivers/STM32CubeF4/Src/stm32f429i_discovery_sdram.c
+    Drivers/STM32CubeF4/Components/ili9341/ili9341.c
 )
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
+    Drivers/STM32CubeF4/Inc
+    Drivers/STM32CubeF4/Components/ili9341
 )
 
 # Add project symbols (macros)
