@@ -46,6 +46,7 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
     Core/Src/hello.c
+    Core/Src/fire_image.c
     Drivers/STM32CubeF4/Src/stm32f429i_discovery.c
     Drivers/STM32CubeF4/Src/stm32f429i_discovery_lcd.c
     Drivers/STM32CubeF4/Src/stm32f429i_discovery_sdram.c
