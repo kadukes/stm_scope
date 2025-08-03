@@ -19,6 +19,9 @@
 /* Includes ------------------------------------------------------------------*/
 #include "hello.h"
 #include <stdio.h>
+#include <string.h>
+#include "fire_image.h"
+#include "stm32f429i_discovery_lcd.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -53,6 +56,11 @@ osThreadId helloWorldTaskHandle;
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+void plot_animation(void) {
+  uint16_t *const fb = (uint16_t *)LCD_FRAME_BUFFER;
+  memcpy(fb, fire_image, sizeof(uint16_t) * FIRE_IMAGE_SIZE);
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -81,6 +89,8 @@ void StartHelloWorldTask(void const * argument)
 {
   /* USER CODE BEGIN StartHelloWorldTask */
   uint32_t counter = 0;
+  
+  plot_animation();
   
   /* Infinite loop */
   for(;;)
