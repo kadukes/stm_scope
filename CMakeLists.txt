@@ -77,9 +77,9 @@ add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
 
 # Custom target for flashing the board
 add_custom_target(flash
-    COMMAND st-flash write ${CMAKE_PROJECT_NAME}.bin 0x08000000
+    COMMAND STM32_Programmer_CLI -c port=SWD mode=UR -w ${CMAKE_PROJECT_NAME}.bin 0x08000000 -v -rst
     DEPENDS ${CMAKE_PROJECT_NAME}
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    COMMENT "Flashing ${CMAKE_PROJECT_NAME}.bin to STM32F429I board using ST-Link"
+    COMMENT "Flashing ${CMAKE_PROJECT_NAME}.bin to STM32F429I board using STM32_Programmer_CLI"
     VERBATIM
 )
