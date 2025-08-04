@@ -106,7 +106,7 @@ void StartHelloWorldTask(void const * argument)
   {
     printf("Hello World from STM32! Counter: %lu\r\n", counter++);
     plot_animation();
-    osDelay(1000); /* Delay for 1 second */
+    osDelay(300); /* Delay for 1 second */
   }
 }
 

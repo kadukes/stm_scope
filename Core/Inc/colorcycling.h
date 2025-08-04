@@ -14,8 +14,8 @@
 /** Color encoding in RGB565 */
 typedef uint16_t color_t;
 
-#define COLOR_KEYS 15
-#define FRAMES 4
+#define COLOR_KEYS 11
+#define FRAMES 8
 
 /** A palette is a mapping of a color key to a color. */
 typedef struct palette {
