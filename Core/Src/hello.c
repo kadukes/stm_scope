@@ -19,9 +19,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 #include "stm32f429i_discovery_lcd.h"
 #include "lcd.h"
 #include "colorcycling.h"
+#include "pwm_dac.h"
 
 
 osThreadId helloWorldTaskHandle;
@@ -81,6 +83,21 @@ void plot_animation(void) {
   }
 }
 
+/**
+ * \brief Computes the displacement of a sine wave at a given point in time.
+ *
+ * \param frequency Wave frequency in Hz.
+ * \param amplitude Amplitude, unitless.
+ * \param phase Initial phase angle of the wave, given in radians.
+ * \param y_offset Vertical offset of the wave, unitless.
+ * \param t_us Point in time at which the displacement shall be calculated, given in microseconds.
+ */
+float sine_wave(const float frequency, const float amplitude, const float phase, const float y_offset, const unsigned int t_us) {
+  const float omega = 2.0f * M_PI * frequency;
+  const float t_s = t_us / 1e6f;
+  return amplitude * sinf(omega * t_s + phase) + y_offset;
+}
+
 
 /**
   * @brief  Initialize Hello World module
@@ -99,14 +116,18 @@ void hello_init(void)
   */
 void StartHelloWorldTask(void const * argument)
 {
-  uint32_t counter = 0;
-  
-  /* Infinite loop */
   for(;;)
   {
-    printf("Hello World from STM32! Counter: %lu\r\n", counter++);
+    printf("Hello World from STM32!");
     plot_animation();
-    osDelay(300);
+    
+    // Generate a sine wave value for PWM output
+    uint32_t current_time_us = HAL_GetTick() * 1000;
+    float sine_value = sine_wave(10.0f, 1.0f, 0.25f, 0.0f, current_time_us);
+    uint8_t pwm_value = (uint8_t)((sine_value + 1) * 127.5f);
+    pwm_write(pwm_value);
+
+    osDelay(2);
   }
 }
 
