@@ -91,3 +91,13 @@ add_custom_target(flash
     COMMENT "Flashing ${CMAKE_PROJECT_NAME}.bin to STM32F429I board using STM32_Programmer_CLI"
     VERBATIM
 )
+
+# Custom target for debugging the board
+add_custom_target(debug
+    COMMAND ${CMAKE_SOURCE_DIR}/debug/debug.sh
+    DEPENDS ${CMAKE_PROJECT_NAME}
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Starting remote debugging session with OpenOCD and GDB"
+    VERBATIM
+)
+

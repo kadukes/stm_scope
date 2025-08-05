@@ -1,0 +1,10 @@
+# GDB initialization script for STM32 debugging
+
+# Connect to OpenOCD
+target extended-remote localhost:3333
+
+# Load the program
+load
+
+# Reset and halt the target
+monitor reset halt
