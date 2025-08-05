@@ -217,6 +217,16 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+
+  RCC_PeriphCLKInitTypeDef  PeriphClkInitStruct;
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_LTDC;
+  PeriphClkInitStruct.PLLSAI.PLLSAIN = 192;
+  PeriphClkInitStruct.PLLSAI.PLLSAIR = 4;
+  PeriphClkInitStruct.PLLSAIDivR = RCC_PLLSAIDIVR_8;
+  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
 }
 
 /**
@@ -514,15 +524,7 @@ static void MX_USART1_UART_Init(void)
 static void MX_FMC_Init(void)
 {
 
-  /* USER CODE BEGIN FMC_Init 0 */
-
-  /* USER CODE END FMC_Init 0 */
-
   FMC_SDRAM_TimingTypeDef SdramTiming = {0};
-
-  /* USER CODE BEGIN FMC_Init 1 */
-
-  /* USER CODE END FMC_Init 1 */
 
   /** Perform the SDRAM1 memory initialization sequence
   */
@@ -543,7 +545,7 @@ static void MX_FMC_Init(void)
   SdramTiming.ExitSelfRefreshDelay = 7;
   SdramTiming.SelfRefreshTime = 4;
   SdramTiming.RowCycleDelay = 7;
-  SdramTiming.WriteRecoveryTime = 3;
+  SdramTiming.WriteRecoveryTime = 2;
   SdramTiming.RPDelay = 2;
   SdramTiming.RCDDelay = 2;
 
@@ -552,20 +554,46 @@ static void MX_FMC_Init(void)
     Error_Handler( );
   }
 
-  /* USER CODE BEGIN FMC_Init 2 */
-
   FMC_SDRAM_CommandTypeDef Command;
 
-  // Clock enable command
+  /* Clock enable command */
   Command.CommandMode = FMC_SDRAM_CMD_CLK_ENABLE;
   Command.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK2;
+  Command.AutoRefreshNumber = 1;
+  Command.ModeRegisterDefinition = 0;
+  HAL_SDRAM_SendCommand(&hsdram1, &Command, HAL_MAX_DELAY);
+  HAL_Delay(1);
+
+  /* PALL (Precharge All) command */
+  Command.CommandMode = FMC_SDRAM_CMD_PALL;
+  Command.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK2;
+  Command.AutoRefreshNumber = 1;
+  Command.ModeRegisterDefinition = 0;
   HAL_SDRAM_SendCommand(&hsdram1, &Command, HAL_MAX_DELAY);
 
-  // Set refresh rate
+  /* Auto-Refresh command */
+  Command.CommandMode = FMC_SDRAM_CMD_AUTOREFRESH_MODE;
+  Command.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK2;
+  Command.AutoRefreshNumber = 8;
+  Command.ModeRegisterDefinition = 0;
+  HAL_SDRAM_SendCommand(&hsdram1, &Command, HAL_MAX_DELAY);
+
+  /* Load Mode Register */
+  /* Configure the SDRAM Mode Register */
+  /* BL = 1, CAS Latency = 3, Operating Mode = 0, Writeburst Mode = 0 */
+  /* Mode Register: [12:10] = 000 (reserved), [9] = 0 (writeburst), [8:7] = 00 (operating mode), */
+  /* [6:4] = 011 (CAS latency 3), [3] = 0 (burst type), [2:0] = 000 (burst length 1) */
+  Command.CommandMode = FMC_SDRAM_CMD_LOAD_MODE;
+  Command.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK2;
+  Command.AutoRefreshNumber = 1;
+  Command.ModeRegisterDefinition = (uint32_t)0x0030;  /* CAS Latency = 3, Burst Length = 1 */
+  HAL_SDRAM_SendCommand(&hsdram1, &Command, HAL_MAX_DELAY);
+
+  /* Set refresh rate */
+  /* SDRAM refresh period = 64ms, Number of rows = 4096 */
+  /* Refresh rate = (64ms / 4096) * SDRAM_FREQUENCY - 20 = 683 */
   HAL_SDRAM_ProgramRefreshRate(&hsdram1, 683);
 
-
-  /* USER CODE END FMC_Init 2 */
 }
 
 /**
